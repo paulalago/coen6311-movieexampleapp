@@ -19,7 +19,7 @@ from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
 
 #Not safe for production, store your key in a file
-os.environ["GOOGLE_API_KEY"] = "AIzaSyAv5f9_NF918Heo-QfABqmM9FzJQ3fOrKI"
+os.environ["GOOGLE_API_KEY"] = ""# insert your key
 
 class AgentState(TypedDict):
     """State representing the customer's order conversation."""
