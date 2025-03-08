@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>{{ movie.title }}</h1>
+  <img src="{{ movie.poster }}" alt="{{ movie.title }}">
+
+  <p><strong>Director:</strong> <a href="">{{ movie.director }}</a></p>
+  <!-- author detail link not yet defined -->
+  <p><strong>Plot:</strong> {{ movie.plot }}</p>
+  <p><strong>Rating:</strong> {{ movie.imdb_rating }}</p>
+  <p><strong>Genre:</strong> {{ movie.genre}}</p>
+
+{% endblock %}

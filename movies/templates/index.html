@@ -1,0 +1,24 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>{{ title }} Home</h1>
+  <p>
+
+  </p>
+    <h2>Chat</h2>
+    <div id="chat">
+        <div id="chat-messages">
+            {% for message in messages %}
+                {% if message.0 == 'ai' or message.0 == 'user' %}
+                    <p>{{ message.1 }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        {{ form.as_table }}
+        </table>
+        <input type="submit" value="Submit">
+      </form>
+{% endblock %}
