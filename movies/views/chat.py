@@ -1,25 +1,24 @@
-from django.shortcuts import render
-from movies.forms import ChatForm
-import requests
-
 import os
-
+from pathlib import Path
 from typing import Annotated
-from typing_extensions import TypedDict
-
-from langgraph.graph.message import add_messages
-from langgraph.graph import StateGraph, START, END
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages.ai import AIMessage
-from langchain_core.messages.tool import ToolMessage
-from collections.abc import Iterable
 from typing import Literal
 
+import requests
+from django.shortcuts import render
+from dotenv import load_dotenv
+from langchain_core.messages.ai import AIMessage
 from langchain_core.tools import tool
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langgraph.graph import StateGraph, START, END
+from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
+from typing_extensions import TypedDict
 
-#Not safe for production, store your key in a file
-os.environ["GOOGLE_API_KEY"] = ""# insert your key
+from movies.forms import ChatForm
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+_ = load_dotenv(BASE_DIR / '.env')
+
 
 class AgentState(TypedDict):
     """State representing the customer's order conversation."""
