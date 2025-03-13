@@ -1,10 +1,8 @@
 from pathlib import Path
 
-import requests
 from django.http import JsonResponse
 from django.shortcuts import render
 from dotenv import load_dotenv
-from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from movies.Assistant import Assistant
@@ -12,31 +10,8 @@ from movies.Assistant import Assistant
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 _ = load_dotenv(BASE_DIR / '.env')
 
-
-@tool
-def get_movies() -> str:
-    """Provide the latest up-to-date movie list."""
-    response = requests.get("http://localhost:8000/movies/api/movies")
-    if response.status_code == 200:
-        return response.text
-    else:
-        return f"Error: {response.status_code}"
-
-
-@tool
-def get_movie_details(movie_id: int) -> str:
-    """Provide the latest up-to-date movie list."""
-    response = requests.get("http://localhost:8000/movies/api/movies/" + str(movie_id))
-    if response.status_code == 200:
-        return response.text
-    else:
-        return f"Error: {response.status_code}"
-
-
-# Define the tools and create a "tools" node.
-tools = [get_movies, get_movie_details]
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
-agent = Assistant(llm, tools)
+agent = Assistant(llm)
 
 
 def index(request):

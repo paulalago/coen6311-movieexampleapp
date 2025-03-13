@@ -1,6 +1,8 @@
 from typing import TypedDict, Annotated
 
+import requests
 from langchain_core.messages import AIMessage
+from langchain_core.tools import tool
 from langgraph.constants import END, START
 from langgraph.graph import add_messages, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
@@ -23,6 +25,25 @@ MOVIEBOT_SYSINT = (
 )
 
 
+@tool
+def get_movies() -> str:
+    """Provide the latest up-to-date movie list."""
+    response = requests.get("http://localhost:8000/movies/api/movies")
+    if response.status_code == 200:
+        return response.text
+    else:
+        return f"Error: {response.status_code}"
+
+
+@tool
+def get_movie_details(movie_id: int) -> str:
+    """Provide the latest up-to-date movie list."""
+    response = requests.get("http://localhost:8000/movies/api/movies/" + str(movie_id))
+    if response.status_code == 200:
+        return response.text
+    else:
+        return f"Error: {response.status_code}"
+
 
 class AgentState(TypedDict):
     """State representing the customer's order conversation."""
@@ -40,18 +61,16 @@ class AgentState(TypedDict):
     finished: bool
 
 
-
 class Assistant:
-    def __init__(self, llm, tools: list):
+    def __init__(self, llm):
         self.llm = llm
+        tools = [get_movies, get_movie_details]
         self.graph = self._build_graph(tools)
 
     def invoke(self, messages):
         return self.graph.invoke(messages)
 
-
     def _build_graph(self, tools: list):
-        tool_node = ToolNode(tools)
         self.llm = self.llm.bind_tools(tools)
 
         # Set up the initial graph based on our state definition.
@@ -59,6 +78,7 @@ class Assistant:
 
         # Add the chatbot function to the app graph as a node called "chatbot" and the automated tools calling
         graph_builder.add_node("chatbot", self._chatbot)
+        tool_node = ToolNode(tools)
         graph_builder.add_node("tools", tool_node)
 
         # Decide if tools need to be called

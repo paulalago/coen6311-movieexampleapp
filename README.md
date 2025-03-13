@@ -22,7 +22,7 @@ source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
 pip install -r requirements.txt
 
 # Setup
-echo "GOOGLE_API_KEY=<add_your_key>" > .env # Replace <add_your_key> with a valid key
+echo GOOGLE_API_KEY=<add_your_key> > .env # Replace <add_your_key> with a valid key
 python manage.py makemigrations
 python manage.py migrate
 
