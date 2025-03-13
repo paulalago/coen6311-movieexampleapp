@@ -1,9 +1,9 @@
-from typing import TypedDict, Annotated, Literal
+from typing import TypedDict, Annotated
 
 from langchain_core.messages import AIMessage
 from langgraph.constants import END, START
 from langgraph.graph import add_messages, StateGraph
-from langgraph.prebuilt import ToolNode
+from langgraph.prebuilt import ToolNode, tools_condition
 
 # This is the message with which the system opens the conversation.
 WELCOME_MSG = "Welcome to the MovieRecBot chat. Type `q` to quit. How may I serve you today?"
@@ -41,7 +41,7 @@ class AgentState(TypedDict):
 
 
 
-class Agent:
+class Assistant:
     def __init__(self, llm, tools: list):
         self.llm = llm
         self.graph = self._build_graph(tools)
@@ -62,7 +62,7 @@ class Agent:
         graph_builder.add_node("tools", tool_node)
 
         # Decide if tools need to be called
-        graph_builder.add_conditional_edges("chatbot", self._maybe_route_to_tools, {"tools": "tools", END: END})
+        graph_builder.add_conditional_edges("chatbot", tools_condition, {"tools": "tools", END: END})
 
         # Tools always route back to chat afterward.
         graph_builder.add_edge("tools", "chatbot")
@@ -85,18 +85,3 @@ class Agent:
             new_output = AIMessage(content=WELCOME_MSG)
 
         return defaults | state | {"messages": [new_output]}
-
-    def _maybe_route_to_tools(self, state: AgentState) -> Literal["tools", "chatbot", "__end__"]:
-        """Routes to the tools node if the last message was a tool call."""
-        msgs = state["messages"]
-
-        # Only route based on the last message.
-        msg = msgs[-1]
-        print("ROUTING: ", msg)
-        # When the chatbot returns tool_calls, route to the "tools" node.
-        if hasattr(msg, "tool_calls") and len(msg.tool_calls) > 0:
-            print("going to tools")
-            return "tools"
-        else:
-            print("going to END")
-            return END
